@@ -4,7 +4,7 @@
 #
 Name     : poetry
 Version  : 1.1.11
-Release  : 1
+Release  : 2
 URL      : https://files.pythonhosted.org/packages/57/93/30798f4df5633eaae1de4d851428fa72d281f949366c116eb21ed41530c5/poetry-1.1.11.tar.gz
 Source0  : https://files.pythonhosted.org/packages/57/93/30798f4df5633eaae1de4d851428fa72d281f949366c116eb21ed41530c5/poetry-1.1.11.tar.gz
 Summary  : Python dependency management and packaging made easy.
@@ -83,7 +83,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1637358542
+export SOURCE_DATE_EPOCH=1637594847
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -93,17 +93,20 @@ export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
 export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=auto "
 export MAKEFLAGS=%{?_smp_mflags}
-python3 setup.py build
+python3 -m build --wheel --skip-dependency-check --no-isolation
 
 %install
 export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/poetry
 cp %{_builddir}/poetry-1.1.11/LICENSE %{buildroot}/usr/share/package-licenses/poetry/84661790a5df00ab944c2d37978d6ce5ac88e554
-python3 -tt setup.py build  install --root=%{buildroot}
+python3 -m install --destdir=%{buildroot} dist/*.whl
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
+## Remove excluded files
+rm -f %{buildroot}*/usr/lib/python3.*/site-packages/poetry/__init__.py
+rm -f %{buildroot}*/usr/lib/python3.*/site-packages/poetry/__pycache__/__init__.cpython-3*.pyc
 
 %files
 %defattr(-,root,root,-)
